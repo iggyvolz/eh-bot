@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class EHBot extends ListenerAdapter {
+    private static long rolesChannel;
     public static void main(String[] args) throws LoginException 
     {
         String token;
@@ -22,8 +23,9 @@ public class EHBot extends ListenerAdapter {
             Properties props = new Properties();
             props.load(new FileInputStream("discord.config"));
             token = props.getProperty("discord.token");
+            rolesChannel = Long.parseLong(props.getProperty("discord.roleschannel"));
         } catch(IOException e) {
-            System.out.println("could not find discord token: " + e.getMessage());
+            System.out.println("invalid config: " + e.getMessage());
             return;
         }
         JDABuilder.createDefault(token)
@@ -33,7 +35,7 @@ public class EHBot extends ListenerAdapter {
 
     @Override
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
-        if(event.getChannel().getIdLong() == 761327969083195403L) {
+        if(event.getChannel().getIdLong() == rolesChannel) {
             List<Role> roles = event.getChannel().retrieveMessageById(event.getMessageIdLong()).complete().getMentionedRoles();
             if(roles.size()==1) {
                 Role role = roles.get(0);
@@ -46,7 +48,7 @@ public class EHBot extends ListenerAdapter {
 
     @Override
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
-        if(event.getChannel().getIdLong() == 761327969083195403L) {
+        if(event.getChannel().getIdLong() == rolesChannel) {
             List<Role> roles = event.getChannel().retrieveMessageById(event.getMessageIdLong()).complete().getMentionedRoles();
             if(roles.size()==1) {
                 Role role = roles.get(0);
